@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.1.2/socket.io.js"></script>
+    <script src=" https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <link rel="stylesheet" href="static/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Kanit&display=swap" rel="stylesheet">
+
+    <script>
+
+        $(document).ready(function(){
+            $("#chat").empty()
+        })
+
+        var socket = io.connect('http://' + document.domain + ':' + location.port);
+
+        // Handling the received message from server
+        socket.on('message_from_server', function(message) {
+            console.log('Received message from server:', message);
+            let pesan = message['message']
+            let time = message['times']
+            let temphtml = `<div class="balon">
+                                <p>${pesan}<span>${time}</span></p>
+                            </div>`
+            if (pesan == null){
+                $("#chat").empty()
+            }else {
+                $("#chat").append(temphtml)
+            }
+        });
+
+
+        // Sending a message from client to server
+        function sendMessage() {
+            let text = $('#textchat').val();
+            socket.emit('message_from_client', text);
+        }
+
+        if (sendMessage()) {
+            text = $('#textchat').val("")
+        }
+
+        
+    </script>
+</head>
+<body>
+    <div class="all">
+        <div class="wm">
+            <h3>Chatrel</h3>
+        </div>
+        <div id="chat" class="chat">
+            
+        </div>
+        <div class="send">
+            <input type='text' id="textchat">
+            <button onclick="sendMessage()">Kirim</button>
+        </div>
+    </div>
+
+</body>
+</html>
